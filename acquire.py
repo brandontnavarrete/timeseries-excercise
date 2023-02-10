@@ -9,6 +9,45 @@ pd.options.display.max_columns = None
 pd.options.display.max_rows = None
 
 
+
+def get_superstore(get_connection):
+    filename = "superstore_db.csv"
+    
+    if os.path.isfile(filename):
+        return pd.read_csv(filename)
+    
+    else :
+    # read the SQL query into a dataframe
+        df = pd.read_sql('''
+select * 
+from orders
+
+join categories 
+on orders.`Category ID` = categories.`Category ID`
+
+right join customers 
+on orders.`Customer ID` = customers.`Customer ID`
+
+join products
+on orders.`Product ID` = products.`Product ID`
+
+join regions 
+on orders.`Region ID` = regions.`Region ID`
+
+                         '''
+                         , get_connection('superstore_db'))
+
+    # Write that dataframe to disk for later. Called "caching" the data for later.
+        df.to_csv(filename,index = False)
+
+    # Return the dataframe to the calling code
+        return df  
+
+
+
+
+
+
 def get_people_data(url):
     
     # creating an empty list of people
